@@ -3,7 +3,9 @@ A build script and associated files to make a debian package for Helium validato
 
 A deb package provides the easiest way to install and run a Helium validator on Debian or Ubuntu. Get the performance of source with the convenience of a container.
 
-Requirements: Note, the hosted package was built on an AMD Zen2 machine. Please log an issue against this repo if you find compatibility issues with other processors.
+This software is provided as-is without warranty of any kind. If you do find an issue or have questions, open an issue or reach out to me on Helium Discord @PaulVMo and I will do my best to respond.
+
+Note, the hosted package was built on an AMD Zen2 machine. Please log an issue against this repo if you find compatibility issues with other processors.
 
 # Install the hosted deb package
 Process for install the deb package on Debian or Ubuntu GNU/Linux.
@@ -30,6 +32,18 @@ sudo usermod -aG helium $USER && su - $USER
 That's it. You are now running a Helium validator. See the below and the [Helium Docs](https://docs.helium.com/mine-hnt/validators) for more detail on running the validator.
 
 
+# Migrating from Docker
+Switching from docker to this package requires a few additional steps due to the different file locations. The following assumes the docker install instructions from the [Helium Docs](https://docs.helium.com/mine-hnt/validators) using $HOME/validator_data as the data directory location.
+
+1. Remove the docker container `docker stop validator && docker rm validator`
+2. Install the deb package per the steps above
+3. Stop the validator service `sudo systemctl stop validator`
+4. Remove the new data directory created by the validator package `rm -rf /var/data/miner`
+5. Move the old validator data dir `sudo mv $HOME/validator_data /var/data/miner`
+6. Delete the old logs out of the data directory `sudo rm /var/data/miner/log`
+7. Change ownership of the data direcotry to the helium user `sudo chown -R helium:helium /var/data/miner`
+8. Restart validator service `sudo systemctl start validator`
+
 # Additional details
 
 ## Running validator command
@@ -39,7 +53,6 @@ For example,
 ```
 miner info summary
 ```
-
 
 ## Stopping and Starting the Validator
 The validator is run as a systemd service. It is started by default after install and upon any reboot. Use `systemctl` for further control of the service.
