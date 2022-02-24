@@ -8,6 +8,7 @@ set -e
 # BUILD FLAGS
 CFLAGS="-O3 -march=x86-64-v3"
 CXXFLAGS="-O3 -march=x86-64-v3"
+ERL_COMPILER_OPTIONS="[deterministic]"
 
 
 # Clone helium miner repo if not already exists, fetch latest
@@ -69,8 +70,11 @@ fpm -n validator \
     --deb-systemd-restart-after-upgrade \
     --deb-user helium \
     --deb-group helium \
+    --maintainer PaulVMo@github.com \
+    --url https://github.com/PaulVMo/helium-validator-deb \
+    --description "Debian package for Helium Network Validator" \
     miner/_build/validator/rel/=/opt \
-    /tmp/genesis=/opt/miner/update/genesis 
+    /tmp/genesis=/opt/miner/update/genesis
 
 # Upload to Gemfury
 curl -F package=@validator_${VERSION}_amd64.deb https://${FURY_TOKEN}@push.fury.io/myheliumvalidator/
