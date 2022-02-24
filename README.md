@@ -3,7 +3,7 @@ A build script and associated files to make a debian package for Helium validato
 
 A deb package provides the easiest way to install and run a Helium validator on Debian or Ubuntu. Get the performance of source with the convenience of a container.
 
-This software is provided as-is without warranty of any kind. If you do find an issue or have questions, open an issue or reach out to me on Helium Discord @PaulVMo and I will do my best to respond.
+This software is provided as-is without warranty of any kind. If you do find an issue or have questions, open an issue or reach out to me on Helium Discord @PaulM and I will do my best to respond.
 
 Note, the hosted package was built on an AMD Zen2 machine. Please log an issue against this repo if you find compatibility issues with other processors.
 
@@ -43,6 +43,19 @@ Switching from docker to this package requires a few additional steps due to the
 6. Delete the old logs out of the data directory `sudo rm /var/data/miner/log`
 7. Change ownership of the data direcotry to the helium user `sudo chown -R helium:helium /var/data/miner`
 8. Restart validator service `sudo systemctl start validator`
+
+
+# Upgrading the package
+Upgrade is easy. Once a new version has been published, refresh apt package list and run the install again validator
+```
+sudo apt update && sudo apt install validator
+```
+
+If you would like to install a specific version, you can specify it in the install command
+```
+sudo apt update && sudo apt install validator=1.7.0
+```
+
 
 # Additional details
 
