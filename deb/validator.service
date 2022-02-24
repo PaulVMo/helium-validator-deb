@@ -1,0 +1,20 @@
+[Unit]
+Description=miner instance
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/miner/bin/miner foreground
+ExecStop=/opt/miner/bin/miner stop
+User=helium
+PIDFile=/var/miner/miner.pid
+Environment=HOME="/var/miner"
+Environment=RUNNER_LOG_DIR="/var/miner/log"
+Environment=ERL_CRASH_DUMP="/var/miner/log"
+Environment=RELX_OUT_FILE_PATH="/tmp"
+LimitNOFILE=128000
+LimitNPROC=128000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
