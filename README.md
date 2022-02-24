@@ -10,18 +10,24 @@ Process for install the deb package on Debian or Ubuntu GNU/Linux.
 
 ### 1. Add the repo to your system
 Add the deb package repository as an Apt source on your system.
-```echo "deb [trusted=yes] deb [trusted=yes] https://apt.fury.io/myheliumvalidator/ /" > \/etc/apt/sources.list.d/fury.list```
+```
+echo "deb [trusted=yes] https://apt.fury.io/myheliumvalidator/ /" | sudo tee -a /etc/apt/sources.list.d/fury.list
+```
 
 ### 2. Install `validator` package
 Refresh the package list from the repository and install the validator package
-```sudo apt update && sudo apt install validator```
+```
+sudo apt update && sudo apt install validator
+```
 
 ### 3. Add your user to `helium` group
 To allow your user to call miner commands and access log files, you user needs to be added to the `helium` user group which owns the validator files. 
 The following adds your current user to the group and refreshes you user's group so you can begin using immediately.
-```sudo usermod -aG helium $USER && su - $USER```
+```
+sudo usermod -aG helium $USER && su - $USER
+```
 
-That's it. You are now running a Helium validator. See the below or the [Helium Docs](https://docs.helium.com/mine-hnt/validators) for more detail on running the validator.
+That's it. You are now running a Helium validator. See the below and the [Helium Docs](https://docs.helium.com/mine-hnt/validators) for more detail on running the validator.
 
 
 # Additional details
@@ -30,17 +36,18 @@ That's it. You are now running a Helium validator. See the below or the [Helium 
 The package links the miner executable to your /usr/local/bin directory so it is immediately usable at the command line by just running `miner`.
 
 For example,
-```>miner info name
-anger-purple-tiger```
+```
+miner info summary
+```
 
 
 ## Stopping and Starting the Validator
 The validator is run as a systemd service. It is started by default after install and upon any reboot. Use `systemctl` for further control of the service.
 
-Stop Validator - `sudo systemctl stop validator`
-Start Validator - `sudo systemctl start validator`
-Restart Validator - 'sudo systemctl restart validator`
-Check Validator service status - `sudo systemctl status validator`
+- Stop Validator: `sudo systemctl stop validator`
+- Start Validator: `sudo systemctl start validator`
+- Restart Validator: `sudo systemctl restart validator`
+- Check Validator service status: `sudo systemctl status validator`
 
 
 ## Validator files
@@ -53,7 +60,9 @@ For example, the miner executable is located at `/opt/miner/bin/miner`. Running 
 You will find you find the console and error logs here.
 
 For example, to look at absorb and commit times:
-```cat /var/log/miner/console.log | grep absorb_and_commit```
+```
+cat /var/log/miner/console.log | grep absorb_and_commit
+```
 
 ### Blockchain Data - /var/data/miner
 The blockchain and ledger databases are located here. This is also the location of the swarm_key. 
