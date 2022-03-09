@@ -17,7 +17,14 @@ echo "deb [trusted=yes] https://apt.fury.io/myheliumvalidator/ /" | sudo tee -a 
 ```
 
 ### 2. Install `validator` package
-Refresh the package list from the repository and install the validator package
+Refresh the package list from the repository and install the validator package. 
+
+**Install a specific version - replace 1.x.x with the desired version:**
+```
+sudo apt update && sudo apt install validator=1.x.x
+```
+
+**Install the latest:**
 ```
 sudo apt update && sudo apt install validator
 ```
