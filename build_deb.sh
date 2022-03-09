@@ -6,10 +6,9 @@
 set -e
 
 # BUILD FLAGS
-CFLAGS="-O3 -march=x86-64-v3"
-CXXFLAGS="-O3 -march=x86-64-v3"
-ERL_COMPILER_OPTIONS="[deterministic]"
-
+export CFLAGS="-O3 -march=x86-64-v3"
+export CXXFLAGS="-O3"
+export ERL_COMPILER_OPTIONS="[deterministic]"
 
 # Clone helium miner repo if not already exists, fetch latest
 git clone https://github.com/helium/miner || true
@@ -30,12 +29,12 @@ fi
 
 # Make sure there are no other tags associated to the same commit as selected tag
 git checkout tags/${VERSION_TAG}
-COMMIT=$(git rev-parse ${VERSION_TAG})
+COMMIT=$(git rev-list -n 1 ${VERSION_TAG})
 for tag in $(git tag --points-at ${COMMIT});
 do
 	git tag -d ${tag}
 done
-git tag -a ${VERSION_TAG}+mhv -m "MyHeliumValidator version ${VERSION_TAG}"
+git tag -a ${VERSION_TAG}+mhv -m "MyHeliumValidator version ${VERSION_TAG}" ${COMMIT}^{}
 
 
 # Build the validator miner
@@ -51,6 +50,9 @@ cd ../
 
 # Update the sys.config.src file with the deb package version
 cp deb/deb-val.config.src miner/_build/validator/rel/miner/releases/${VERSION}+mhv/sys.config.src
+
+# Grab OTP version for package description
+OTP_VERSION=$(erl -eval '{ok, Version} = file:read_file(filename:join([code:root_dir(), "releases", erlang:system_info(otp_release), "OTP_VERSION"])), io:fwrite(Version), halt().' -noshell)
 
 fpm -n validator \
     -v "${VERSION}" \
@@ -72,7 +74,7 @@ fpm -n validator \
     --deb-group helium \
     --maintainer PaulVMo@github.com \
     --url https://github.com/PaulVMo/helium-validator-deb \
-    --description "Debian package for Helium Network Validator" \
+    --description "Debian package for Helium Network Validator. Build with OTP ${OTP_VERSION}" \
     miner/_build/validator/rel/=/opt \
     /tmp/genesis=/opt/miner/update/genesis
 
