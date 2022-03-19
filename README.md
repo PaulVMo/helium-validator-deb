@@ -8,7 +8,7 @@ This software is provided as-is without warranty of any kind. If you do find an 
 Note, the hosted package was built on an AMD Zen2 machine. Please log an issue against this repo if you find compatibility issues with other processors.
 
 # Install the hosted deb package
-Process for install the deb package on Debian or Ubuntu GNU/Linux.
+Process for install the deb package on Debian or Ubuntu GNU/Linux. This will require you to have super user access (i.e. a member of the `sudo` group). As always, it is good practice to perform this with a user other than `root` and use sudo as indicated instead of running as root.
 
 ### 1. Add the repo to your system
 Add the deb package repository as an Apt source on your system.
@@ -30,26 +30,30 @@ sudo apt update && sudo apt install validator
 ```
 
 ### 3. Add your user to `helium` group
-To allow your user to call miner commands and access log files, you user needs to be added to the `helium` user group which owns the validator files. 
-The following adds your current user to the group and refreshes you user's group so you can begin using immediately.
+To allow your user to call miner commands and access log files, your user needs to be added to the `helium` user group which owns the validator files. 
+The following adds your current user to the group. You must restart your session for the group change to take effect.
 ```
-sudo usermod -aG helium $USER && su - $USER
+sudo usermod -aG helium $USER
 ```
+Now, logout and then log back in for the group change to apply. Then, verify that the group was correctly added by running `id`. 
+The output should include the group `helium`. Do not run any `miner` commands until you have confirmed your user is part of the helium group.
 
-That's it. You are now running a Helium validator. See the below and the [Helium Docs](https://docs.helium.com/mine-hnt/validators) for more detail on running the validator.
+
+That's it! You are now running a Helium validator. See the below and the [Helium Docs](https://docs.helium.com/mine-hnt/validators) for more detail on running the validator.
 
 
 # Migrating from Docker
 Switching from docker to this package requires a few additional steps due to the different file locations. The following assumes the docker install instructions from the [Helium Docs](https://docs.helium.com/mine-hnt/validators) using $HOME/validator_data as the data directory location.
 
 1. Remove the docker container `docker stop validator && docker rm validator`
-2. Install the deb package per the steps above
-3. Stop the validator service `sudo systemctl stop validator`
-4. Remove the new data directory created by the validator package `rm -rf /var/data/miner`
-5. Move the old validator data dir `sudo mv $HOME/validator_data /var/data/miner`
-6. Delete the old logs out of the data directory `sudo rm /var/data/miner/log`
-7. Change ownership of the data direcotry to the helium user `sudo chown -R helium:helium /var/data/miner`
-8. Restart validator service `sudo systemctl start validator`
+2. If you created a `miner` alias for the command `docker exec validator miner`, you must remove it. Depending on the system and how you configured the alias, `unalias miner` will remove this. On others, you may need to edit ~/.bash_aliases and delete the line for `miner`
+3. Install the deb package per the steps above
+4. Stop the validator service `sudo systemctl stop validator`
+5. Remove the new data directory created by the validator package `rm -rf /var/data/miner`
+6. Move the old validator data dir `sudo mv $HOME/validator_data /var/data/miner`
+7. Delete the old logs out of the data directory `sudo rm /var/data/miner/log`
+8. Change ownership of the data direcotry to the helium user `sudo chown -R helium:helium /var/data/miner`
+9. Restart validator service `sudo systemctl start validator`
 
 
 # Upgrading the package
