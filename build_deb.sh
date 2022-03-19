@@ -34,12 +34,12 @@ for tag in $(git tag --points-at ${COMMIT});
 do
 	git tag -d ${tag}
 done
-git tag -a ${VERSION_TAG}+mhv -m "MyHeliumValidator version ${VERSION_TAG}" ${COMMIT}^{}
+git tag -a ${VERSION_TAG}+deb.pkg -m "MyHeliumValidator version ${VERSION_TAG}" ${COMMIT}^{}
 
 
 # Build the validator miner
 VERSION="$(echo $VERSION_TAG | sed -e 's,validator,,')"
-./rebar3 as validator release -n miner -v ${VERSION}+mhv
+./rebar3 as validator release -n miner -v ${VERSION}+deb.pkg
 
 
 # Get the genesis block
@@ -49,7 +49,7 @@ wget -O /tmp/genesis https://snapshots.helium.wtf/genesis.mainnet
 cd ../
 
 # Update the sys.config.src file with the deb package version
-cp deb/deb-val.config.src miner/_build/validator/rel/miner/releases/${VERSION}+mhv/sys.config.src
+cp deb/deb-val.config.src miner/_build/validator/rel/miner/releases/${VERSION}+deb.pkg/sys.config.src
 
 # Grab OTP version for package description
 OTP_VERSION=$(erl -eval '{ok, Version} = file:read_file(filename:join([code:root_dir(), "releases", erlang:system_info(otp_release), "OTP_VERSION"])), io:fwrite(Version), halt().' -noshell)
