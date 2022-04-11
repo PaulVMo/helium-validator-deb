@@ -52,7 +52,7 @@ Switching from docker to this package requires a few additional steps due to the
 5. Remove the new data directory created by the validator package `rm -rf /var/data/miner`
 6. Move the old validator data dir `sudo mv $HOME/validator_data /var/data/miner`
 7. If desired, delete the old docker logs out of the data directory `sudo rm -rf /var/data/miner/log`. The new logs will be created automatically at `/var/log/miner`. Should we prefer to move the old logs to this new location, make sure to also update the file ownership of the moved logs `sudo chown -R helium:helium: /var/log/miner`.
-8. Change ownership of the data direcotry to the helium user `sudo chown -R helium:helium /var/data/miner`
+8. Change ownership of the data directory to the helium user `sudo chown -R helium:helium /var/data/miner`
 9. Restart validator service `sudo systemctl start validator`
 
 
