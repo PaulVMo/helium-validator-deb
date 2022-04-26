@@ -10,6 +10,23 @@ export CFLAGS="-O3 -march=x86-64-v3"
 export CXXFLAGS="-O3"
 export ERL_COMPILER_OPTIONS="[deterministic]"
 
+
+# Set architectur
+arch=$(uname -i)
+
+if [ "$arch" == 'x86_64' ]
+then
+    ARCH=amd64 
+elif [ "$arch" == 'aarch64' ]
+then
+    ARCH=arm64
+else
+    echo "Unable to detect architecture"
+    exit
+fi
+echo "Detected architecture ${ARCH}"
+
+
 # Clone helium miner repo if not already exists, fetch latest
 git clone https://github.com/helium/miner || true
 cd miner
@@ -48,9 +65,6 @@ wget -O /tmp/genesis https://snapshots.helium.wtf/genesis.mainnet
 
 cd ../
 
-# Update the sys.config.src file with the deb package version
-cp deb/deb-val.config.src miner/_build/validator/rel/miner/releases/${VERSION}+deb.pkg/sys.config.src
-
 # Grab OTP version for package description
 OTP_VERSION=$(erl -eval '{ok, Version} = file:read_file(filename:join([code:root_dir(), "releases", erlang:system_info(otp_release), "OTP_VERSION"])), io:fwrite(Version), halt().' -noshell)
 
@@ -78,5 +92,6 @@ fpm -n validator \
     miner/_build/validator/rel/=/opt \
     /tmp/genesis=/opt/miner/update/genesis
 
+
 # Upload to Gemfury
-curl -F package=@validator_${VERSION}_amd64.deb https://${FURY_TOKEN}@push.fury.io/myheliumvalidator/
+curl -F package=@validator_${VERSION}_${ARCH}.deb https://${FURY_TOKEN}@push.fury.io/myheliumvalidator/

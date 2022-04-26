@@ -9,9 +9,11 @@ ExecStop=/opt/miner/bin/miner stop
 User=helium
 PIDFile=/var/miner/miner.pid
 Environment=HOME="/var/miner"
-Environment=RUNNER_LOG_DIR="/var/miner/log"
-Environment=ERL_CRASH_DUMP="/var/miner/log"
+Environment=RUNNER_LOG_DIR="/var/log/miner"
+Environment=ERL_CRASH_DUMP="/var/log/miner"
 Environment=RELX_OUT_FILE_PATH="/tmp"
+Environment=BASE_DIR=/var/data/miner
+Environment=LOG_ROOT=/var/log/miner
 LimitNOFILE=128000
 LimitNPROC=128000
 Restart=always
