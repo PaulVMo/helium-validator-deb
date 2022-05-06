@@ -1,0 +1,26 @@
+[Unit]
+Description=miner ${MINER_NUMBER} validator instance
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/miner${MINER_NUMBER}/bin/miner foreground
+ExecStop=/opt/miner${MINER_NUMBER}/bin/miner stop
+User=helium
+PIDFile=/opt/miner${MINER_NUMBER}/miner.pid
+Environment=HOME=/opt/miner${MINER_NUMBER}
+Environment=RUNNER_LOG_DIR=/opt/miner${MINER_NUMBER}/log/
+Environment=ERL_CRASH_DUMP=/opt/miner${MINER_NUMBER}/log/
+Environment=RELX_OUT_FILE_PATH="/tmp"
+Environment=BASE_DIR=/opt/miner${MINER_NUMBER}/data
+Environment=LOG_ROOT=/opt/miner${MINER_NUMBER}/log
+Environment=UPDATE_DIR=/opt/miner${MINER_NUMBER}/update
+Environment=GRPC_PORT=${GRPC_PORT}
+Environment=LISTEN_ADDRESS=/ip4/0.0.0.0/tcp/${P2P_PORT}
+Environment=JSONRPC_PORT=${JSONRPC_PORT}
+LimitNOFILE=128000
+LimitNPROC=128000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

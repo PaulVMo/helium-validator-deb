@@ -1,0 +1,12 @@
+## Name of the node
+-name val_miner${MINER_NUMBER}@127.0.0.1
+
+## Cookie for distributed erlang
+-setcookie miner
+
+## we are time warp safe
++c true
++C multi_time_warp
++sbwt very_short
++stbt db
++swt very_low

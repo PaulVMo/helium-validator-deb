@@ -68,30 +68,92 @@ cd ../
 # Grab OTP version for package description
 OTP_VERSION=$(erl -eval '{ok, Version} = file:read_file(filename:join([code:root_dir(), "releases", erlang:system_info(otp_release), "OTP_VERSION"])), io:fwrite(Version), halt().' -noshell)
 
+# Time to make the package. Clean up old ones first
+rm -f *.deb
+
+## STANDARD PACKAGE
+
+cat deb/validator.service.template | envsubst > /tmp/validator.service
+cat deb/before_install.sh.template | envsubst > /tmp/before_install.sh
+cat deb/after_install.sh.template | envsubst > /tmp/after_install.sh
+cat deb/vm.args.template | envsubst > miner/_build/validator/rel/miner/releases/${VERSION}+deb.pkg/vm.args
+
 fpm -n validator \
-    -v "${VERSION}" \
-    -s dir \
-    -t deb \
-    --depends libssl1.1 \
-    --depends libsodium23 \
-    --depends libncurses5 \
-    --depends dbus \
-    --depends libstdc++6 \
-    --deb-systemd deb/validator.service \
-    --before-install deb/before_install.sh \
-    --after-install deb/after_install.sh \
-    --deb-no-default-config-files \
-    --deb-systemd-enable \
-    --deb-systemd-auto-start \
-    --deb-systemd-restart-after-upgrade \
-    --deb-user helium \
-    --deb-group helium \
-    --maintainer PaulVMo@github.com \
-    --url https://github.com/PaulVMo/helium-validator-deb \
-    --description "Debian package for Helium Network Validator. Build with OTP ${OTP_VERSION}" \
-    miner/_build/validator/rel/=/opt \
-    /tmp/genesis=/opt/miner/update/genesis
+   -v "${VERSION}" \
+   -s dir \
+   -t deb \
+   --depends libsodium23 \
+   --depends libncurses5 \
+   --depends dbus \
+   --depends libstdc++6 \
+   --deb-systemd tmp/validator.service \
+   --before-install tmp/before_install.sh \
+   --after-install tmp/after_install.sh \
+   --deb-no-default-config-files \
+   --deb-systemd-enable \
+   --deb-systemd-auto-start \
+   --deb-systemd-restart-after-upgrade \
+   --deb-user helium \
+   --deb-group helium \
+   --maintainer PaulVMo@github.com \
+   --url https://github.com/PaulVMo/helium-validator-deb \
+   --description "Debian package for Helium Network Validator. Build with OTP ${OTP_VERSION}" \
+   miner/_build/validator/rel/=/opt \
+   /tmp/genesis=/opt/miner/update/genesis
 
 
 # Upload to Gemfury
 curl -F package=@validator_${VERSION}_${ARCH}.deb https://${FURY_TOKEN}@push.fury.io/myheliumvalidator/
+
+
+
+## MAKE THE MULTIPLE NUMBERED PACKAGES
+
+GRPC_PORT=8080
+P2P_PORT=2154
+JSONRPC_PORT=4467
+
+for i in {1..6}
+do
+	MINER_NUMBER=${i}
+	export GRPC_PORT P2P_PORT JSONRPC_PORT MINER_NUMBER
+
+	cat deb/validator.service.template | envsubst > /tmp/validator${i}.service
+    cat deb/before_install.sh.template | envsubst > /tmp/before_install.sh
+	cat deb/after_install.sh.template | envsubst > /tmp/after_install.sh
+	cat deb/vm.args.template | envsubst > miner/_build/validator/rel/miner/releases/${VERSION}+deb.pkg/vm.args
+
+	fpm -n validator${i} \
+	    -v "${VERSION}" \
+	    -s dir \
+	    -t deb \
+	    --depends libsodium23 \
+	    --depends libncurses5 \
+	    --depends dbus \
+	    --depends libstdc++6 \
+	    --deb-systemd /tmp/validator${i}.service \
+	    --before-install /tmp/before_install.sh \
+	    --after-install /tmp/after_install.sh \
+	    --deb-no-default-config-files \
+	    --deb-systemd-enable \
+	    --deb-systemd-auto-start \
+	    --deb-systemd-restart-after-upgrade \
+	    --deb-user helium \
+	    --deb-group helium \
+	    --maintainer PaulVMo@github.com \
+	    --url https://github.com/PaulVMo/helium-validator-deb \
+	    --description "Debian package for Helium Network Validator. Build with OTP ${OTP_VERSION}" \
+	    miner/_build/validator/rel/miner/=/opt/miner${i} \
+	    /tmp/genesis=/opt/miner${i}/update/genesis
+
+
+	# Upload to Gemfury
+	echo "uploading: validator${i}_${VERSION}_${ARCH}.deb"
+	curl -F package=@validator${i}_${VERSION}_${ARCH}.deb https://${FURY_TOKEN}@push.fury.io/myheliumvalidator/
+
+	((GRPC_PORT++))
+	((P2P_PORT++))
+	((JSONRPC_PORT++))
+done
+
+rm -f /tmp/*.service
