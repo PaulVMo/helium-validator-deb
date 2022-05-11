@@ -6,7 +6,8 @@
 set -e
 
 # OPTIONS
-export OTP_VERSION=24.3.4
+ERL_VERSION=24.3.4
+ERL_DIR=~/erl
 export CFLAGS="-O3"
 export CXXFLAGS="-O3"
 export ERL_COMPILER_OPTIONS="[deterministic]"
@@ -30,7 +31,7 @@ echo "Detected architecture ${ARCH}"
 
 # Make sure deps are ready
 rustup update
-. ~/erl/${OTP_VERSION}/activate
+. ${ERL_DIR}/${ERL_VERSION}/activate
 
 # Clone helium miner repo if not already exists, fetch latest
 git clone https://github.com/helium/miner || true
@@ -95,7 +96,7 @@ fpm -n validator \
    --deb-group helium \
    --maintainer PaulVMo@github.com \
    --url https://github.com/PaulVMo/helium-validator-deb \
-   --description "Debian package for Helium Network Validator. Build with OTP ${OTP_VERSION}" \
+   --description "Debian package for Helium Network Validator. Build with OTP ${ERL_VERSION}" \
    miner/_build/validator/rel/=/opt \
    /tmp/genesis=/opt/miner/update/genesis
 
@@ -111,47 +112,48 @@ GRPC_PORT=8080
 P2P_PORT=2154
 JSONRPC_PORT=4467
 
-#for i in {1..6}
-#do
-#	MINER_NUMBER=${i}
-#	export GRPC_PORT P2P_PORT JSONRPC_PORT MINER_NUMBER
-#
-#	cat deb/validator.service.template | envsubst > /tmp/validator${i}.service
-#    cat deb/before_install.sh.template | envsubst > /tmp/before_install.sh
-#	cat deb/after_install.sh.template | envsubst > /tmp/after_install.sh
-#	cat deb/vm.args.template | envsubst > miner/_build/validator/rel/miner/releases/${VERSION}+deb.pkg/vm.args
-#
-#	fpm -n validator${i} \
-#	    -v "${VERSION}" \
-#	    -s dir \
-#	    -t deb \
-#	    --depends libsodium23 \
-#	    --depends libncurses5 \
-#	    --depends dbus \
-#	    --depends libstdc++6 \
-#	    --deb-systemd /tmp/validator${i}.service \
-#	    --before-install /tmp/before_install.sh \
-#	    --after-install /tmp/after_install.sh \
-#	    --deb-no-default-config-files \
-#	    --deb-systemd-enable \
-#	    --deb-systemd-auto-start \
-#	    --deb-systemd-restart-after-upgrade \
-#	    --deb-user helium \
-#	    --deb-group helium \
-#	    --maintainer PaulVMo@github.com \
-#	    --url https://github.com/PaulVMo/helium-validator-deb \
-#	    --description "Debian package for Helium Network Validator. Build with OTP ${OTP_VERSION}" \
-#	    miner/_build/validator/rel/miner/=/opt/miner${i} \
-#	    /tmp/genesis=/opt/miner${i}/update/genesis
-#
-#
-#	# Upload to Gemfury
-#	echo "uploading: validator${i}_${VERSION}_${ARCH}.deb"
-#	curl -F package=@validator${i}_${VERSION}_${ARCH}.deb https://${FURY_TOKEN}@push.fury.io/myheliumvalidator/
-#
-#	((GRPC_PORT++))
-#	((P2P_PORT++))
-#	((JSONRPC_PORT++))
-#done
+for i in {1..6}
+do
+	MINER_NUMBER=${i}
+	export GRPC_PORT P2P_PORT JSONRPC_PORT MINER_NUMBER
+
+	cat deb/validator.service.template | envsubst > /tmp/validator${i}.service
+    cat deb/before_install.sh.template | envsubst > /tmp/before_install.sh
+	cat deb/after_install.sh.template | envsubst > /tmp/after_install.sh
+	cat deb/vm.args.template | envsubst > miner/_build/validator/rel/miner/releases/${VERSION}+deb.pkg/vm.args
+
+	fpm -n validator${i} \
+	    -v "${VERSION}" \
+	    -s dir \
+	    -t deb \
+	    --depends libsodium23 \
+	    --depends libncurses5 \
+	    --depends dbus \
+	    --depends libstdc++6 \
+	    --deb-systemd /tmp/validator${i}.service \
+	    --before-install /tmp/before_install.sh \
+	    --after-install /tmp/after_install.sh \
+	    --deb-no-default-config-files \
+	    --deb-systemd-enable \
+	    --deb-systemd-auto-start \
+	    --deb-systemd-restart-after-upgrade \
+	    --deb-user helium \
+	    --deb-group helium \
+	    --maintainer PaulVMo@github.com \
+	    --url https://github.com/PaulVMo/helium-validator-deb \
+	    --description "Debian package for Helium Network Validator. Build with OTP ${OTP_VERSION}" \
+	    miner/_build/validator/rel/miner/=/opt/miner${i} \
+	    /tmp/genesis=/opt/miner${i}/update/genesis
+
+
+	# Upload to Gemfury
+	echo "uploading: validator${i}_${VERSION}_${ARCH}.deb"
+	curl -F package=@validator${i}_${VERSION}_${ARCH}.deb https://${FURY_TOKEN}@push.fury.io/myheliumvalidator/
+
+	((GRPC_PORT++))
+	((P2P_PORT++))
+	((JSONRPC_PORT++))
+done
 
 rm -f /tmp/*.service
+rm -f /tmp/*install.sh

@@ -9,11 +9,11 @@ ExecStop=/opt/miner/bin/miner stop
 User=helium
 PIDFile=/opt/miner/miner.pid
 Environment=HOME=/opt/miner
-Environment=RUNNER_LOG_DIR=/var/log/miner/
+Environment=RUNNER_LOG_DIR=/var/log/miner
 Environment=ERL_CRASH_DUMP=/var/log/miner
 Environment=RELX_OUT_FILE_PATH="/tmp"
 Environment=BASE_DIR=/var/data/miner
-Environment=LOG_ROOT=/opt/miner/log
+Environment=LOG_ROOT=/var/log/miner
 Environment=UPDATE_DIR=/opt/miner/update
 LimitNOFILE=128000
 LimitNPROC=128000
