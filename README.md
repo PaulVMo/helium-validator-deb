@@ -50,6 +50,22 @@ The output should include the group `helium`. Do not run any `miner` commands un
 
 That's it! You are now running a Helium validator. See the below and the [Helium Docs](https://docs.helium.com/mine-hnt/validators) for more detail on running the validator.
 
+# Override Default Config and Variables
+It is possible to change default configuration by using systemd's config override process. This is a durable process meaning it will persist when the validator package is upgraded. 
+
+1. Make a directory named after the package like `<package name>.service.d` in `/etc/systemd/system`. For example: `sudo mkdir /etc/systemd/system/validator1.service.d/`
+2. Create a file in that new directory called override.conf. For example `sudo vim /etc/systemd/system/validator1.service.d/override.conf`
+3. Populate the file with the `[Service]` header and then the Environment variables desired. For example, the NAT environment variables would be set like this:
+```
+[Service]
+Environment=NAT_INTERNAL_IP=192.168.0.139
+Environment=NAT_EXTERNAL_IP=$( curl -s ipv4.icanhazip.com )
+Environment=NAT_INTERNAL_PORT=2154
+Environment=NAT_EXTERNAL_PORT=2154
+```
+4. Reload and restart the systemd service: `sudo systemctl daemon-reload` and `sudo systemctl restart validator1`
+
+See the Helium deployment guide for more information on the [NAT variables](https://docs.helium.com/mine-hnt/validators/mainnet/deployment-guide/#option-2) and other [environment variables](https://docs.helium.com/mine-hnt/validators/mainnet/deployment-guide/#overriding-default-configuration) that can be set for the validator.
 
 # Migrating from Docker to the Single Package (`validator`)
 Switching from docker to this package requires a few additional steps due to the different file locations. The following assumes the docker install instructions from the [Helium Docs](https://docs.helium.com/mine-hnt/validators) using $HOME/validator_data as the data directory location.
