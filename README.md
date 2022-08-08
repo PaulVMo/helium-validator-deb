@@ -63,7 +63,7 @@ Environment=NAT_EXTERNAL_IP=$( curl -s ipv4.icanhazip.com )
 Environment=NAT_INTERNAL_PORT=2154
 Environment=NAT_EXTERNAL_PORT=2154
 ```
-4. Reload and restart the systemd service: `sudo systemctl daemon-reload` and `sudo systemctl restart validator1`
+4. Reload and restart the systemd service: `sudo systemctl daemon-reload && sudo systemctl restart validator1`
 
 See the Helium deployment guide for more information on the [NAT variables](https://docs.helium.com/mine-hnt/validators/mainnet/deployment-guide/#option-2) and other [environment variables](https://docs.helium.com/mine-hnt/validators/mainnet/deployment-guide/#overriding-default-configuration) that can be set for the validator.
 
