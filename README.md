@@ -125,10 +125,10 @@ The validator is run as a systemd service. It is started by default after instal
 ## Validator files (numbered validator packages)
 All validator files including code, logs, and blockchain data are stored in a numbered miner directory in `/opt`
 
-### Code - /opt/miner1
+### Code - /opt/miner1/bin
 For example, the miner executable is located at `/opt/miner1/bin/miner`. Running `miner1` executes this file (a symbolic link to it is created on install). Addiitonal the Erlang config files for the validator is located here. You should not need to edit these in a typical deployment.
 
-### Logs - /opt/miner1/log
+### Logs - /opt/miner3/log
 You will find you find the console and error logs here.
 
 For example, to look at absorb and commit times on validator3:
@@ -136,10 +136,10 @@ For example, to look at absorb and commit times on validator3:
 cat /opt/miner3/console.log | grep absorb_and_commit
 ```
 
-### Blockchain Data - /opt/miner1/data
+### Blockchain Data - /opt/miner2/data
 The blockchain and ledger databases are located here. This is also the location of the swarm_key. 
 
-If you would like to reuse your swarm_key from another validator, stop the validator and replace the swarm_key at `/opt/miner1/data/miner`
+If you would like to reuse your swarm_key from another validator, stop the validator and replace the swarm_key at `/opt/miner2/data/miner`
 
 
 ## Validator files (single `validator` packages)
