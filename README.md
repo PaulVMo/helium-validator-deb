@@ -7,7 +7,7 @@ A deb package provides the easiest way to install and run a Helium validator on 
 
 This software is provided as-is without warranty of any kind. If you do find an issue or have questions, open an issue or reach out to me on Helium Discord @PaulM and I will do my best to respond.
 
-Note, the hosted package was built on an AMD Zen2 machine. Please log an issue against this repo if you find compatibility issues with other processors.
+Note, this **deb package currently works on Ubuntu 20.04 and other Debian-based distro which still use OpenSSL 1.1**. If you are haing trouble on other versions, try manually installing libssl 1.1. The current version of Erlang/OTP does not current support OpenSSL 3.0.
 
 # Install the hosted deb package
 Process for install the deb package on Debian or Ubuntu GNU/Linux. This will require you to have super user access (i.e. a member of the `sudo` group). As always, it is good practice to perform this with a user other than `root` and use sudo as indicated instead of running as root.
