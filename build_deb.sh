@@ -36,7 +36,7 @@ rustup update
 # Clone helium miner repo if not already exists, fetch latest
 git clone https://github.com/helium/miner || true
 cd miner
-git fetch
+git fetch -f
 
 
 # Get tag from github is not passed as parameter
